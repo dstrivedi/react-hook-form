@@ -1,40 +1,60 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 
 import './style.css';
+
+let renderCount = 0;
+
+type FormValues = {
+  firstName: string,
+  lastName: string,
+  dob: string,
+  email: string
+}
 
 export const Form = () => {
   const {
     register,
     handleSubmit,
-    setValue,
-    formState: { touched },
-  } = useForm({
+    watch,
+    formState: { errors,touchedFields, isSubmitSuccessful, isDirty, isSubmitted, dirtyFields, isLoading, submitCount, isValid },
+  } = useForm<FormValues>({
     defaultValues: {
-      firstName: 'Bill',
-      lastName: 'luo',
-      amount: '',
+      firstName: '',
+      lastName: '',
+      dob: '',
+      email: '',
     },
+    mode: 'onChange'
   });
 
   const onSubmit = (data) => {
-    alert(JSON.stringify(data));
+    console.log(JSON.stringify(data));
   };
 
-  console.log('touched', touched);
+  renderCount++;
+
+  // console.log('touched', touchedFields);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
 
+      <h1>Render count: {renderCount}</h1>
+
       <label>First Name</label>
-      <input type="text" {...register('firstName', { required: true })} />
+      <input type="text" placeholder='Enter firstname' {...register('firstName', { required: true })} />
+      {errors.firstName && <p>This fields is required.</p>}
 
       <label>Last Name</label>
-      <input type="text" {...register('lastName'), { required: true }} />
+      <input type="text" placeholder='Enter lastname' {...register('lastName', { required: true })} />
+      {errors.lastName && <p>This fields is required.</p>}
 
       <label>Email</label>
-      <input type="number" {...register('amount', { min: 1, max: 99 })} />
+      <input type="number" placeholder='Enter email' {...register('email', { required: true })} />
+      {errors.email && <p>This fields is required.</p>}
+
+      <label>Date of Birth</label>
+      <input type="date" {...register('dob', {required: true})} />
+      {errors.dob && <p>This fields is required.</p>}
       
       <input type="submit" />
     </form>
